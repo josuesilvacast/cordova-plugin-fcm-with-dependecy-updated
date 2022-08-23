@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -23,15 +22,12 @@ public class FCMPluginActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-		Log.d(TAG, "==> FCMPluginActivity onCreate");
-		
+
 		Map<String, Object> data = new HashMap<String, Object>();
         if (getIntent().getExtras() != null) {
-			Log.d(TAG, "==> USER TAPPED NOTFICATION");
 			data.put("wasTapped", true);
 			for (String key : getIntent().getExtras().keySet()) {
                 Object value = getIntent().getExtras().get(key);
-                Log.d(TAG, "\tKey: " + key + " Value: " + value);
 				data.put(key, value);
             }
         }
@@ -52,7 +48,6 @@ public class FCMPluginActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-		Log.d(TAG, "==> FCMPluginActivity onResume");
         final NotificationManager notificationManager = (NotificationManager) this.getSystemService(Context.NOTIFICATION_SERVICE);
         notificationManager.cancelAll();
     }
@@ -60,13 +55,11 @@ public class FCMPluginActivity extends Activity {
 	@Override
 	public void onStart() {
 		super.onStart();
-		Log.d(TAG, "==> FCMPluginActivity onStart");
 	}
 	
 	@Override
 	public void onStop() {
 		super.onStop();
-		Log.d(TAG, "==> FCMPluginActivity onStop");
 	}
 
 }

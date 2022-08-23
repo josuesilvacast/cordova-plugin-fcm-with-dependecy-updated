@@ -2,7 +2,6 @@ package com.gae.scaffolder.plugin;
 
 import android.app.NotificationManager;
 import android.content.Context;
-import android.util.Log;
 
 import com.gae.scaffolder.plugin.interfaces.OnFinishedListener;
 import com.gae.scaffolder.plugin.interfaces.TokenListeners;
@@ -72,14 +71,12 @@ public class FCMPlugin extends CordovaPlugin {
     public void initialize(CordovaInterface cordova, CordovaWebView webView) {
         super.initialize(cordova, webView);
         gWebView = webView;
-        Log.d(TAG, "==> FCMPlugin initialize");
 
         FirebaseMessaging.getInstance().subscribeToTopic("android");
         FirebaseMessaging.getInstance().subscribeToTopic("all");
     }
 
     public boolean execute(final String action, final JSONArray args, final CallbackContext callbackContext) throws JSONException {
-        Log.d(TAG, "==> FCMPlugin execute: " + action);
 
         try {
             // READY //
@@ -150,7 +147,6 @@ public class FCMPlugin extends CordovaPlugin {
                 return false;
             }
         } catch (Exception e) {
-            Log.d(TAG, "ERROR: onPluginAction: " + e.getMessage());
             callbackContext.error(e.getMessage());
             return false;
         }
@@ -180,20 +176,16 @@ public class FCMPlugin extends CordovaPlugin {
                 @Override
                 public void onComplete(Task<InstanceIdResult> task) {
                     if (!task.isSuccessful()) {
-                        Log.w(TAG, "getInstanceId failed", task.getException());
                         try {
                             callback.error(exceptionToJson(task.getException()));
                         }
-                        catch (JSONException jsonErr) {
-                            Log.e(TAG, "Error when parsing json", jsonErr);
-                        }
+                        catch (JSONException jsonErr) {  }
                         return;
                     }
 
                     // Get new Instance ID token
                     String newToken = task.getResult().getToken();
 
-                    Log.i(TAG, "\tToken: " + newToken);
                     callback.success(newToken);
                 }
             });
@@ -202,15 +194,11 @@ public class FCMPlugin extends CordovaPlugin {
                 @Override
                 public void onFailure(final Exception e) {
                     try {
-                        Log.e(TAG, "Error retrieving token: ", e);
                         callback.error(exceptionToJson(e));
-                    } catch (JSONException jsonErr) {
-                        Log.e(TAG, "Error when parsing json", jsonErr);
-                    }
+                    } catch (JSONException jsonErr) {  }
                 }
             });
         } catch (Exception e) {
-            Log.w(TAG, "\tError retrieving token", e);
             try {
                 callback.error(exceptionToJson(e));
             } catch(JSONException je) {}
@@ -242,42 +230,31 @@ public class FCMPlugin extends CordovaPlugin {
     }
 
     public static void sendPushPayload(Map<String, Object> payload) {
-        Log.d(TAG, "==> FCMPlugin sendPushPayload");
-        Log.d(TAG, "\tnotificationCallBackReady: " + notificationCallBackReady);
-        Log.d(TAG, "\tgWebView: " + gWebView);
         try {
             JSONObject jo = new JSONObject();
             for (String key : payload.keySet()) {
                 jo.put(key, payload.get(key));
-                Log.d(TAG, "\tpayload: " + key + " => " + payload.get(key));
             }
             String callBack = "javascript:" + notificationCallBack + "(" + jo.toString() + ")";
             if (notificationCallBackReady && gWebView != null) {
-                Log.d(TAG, "\tSent PUSH to view: " + callBack);
                 gWebView.sendJavascript(callBack);
             } else {
-                Log.d(TAG, "\tView not ready. SAVED NOTIFICATION: " + callBack);
                 if (notificationFn != null) {
                     notificationFn.success(jo);
-                    Log.i(TAG, "\tCalled java callback to get notification: with data:" + jo.toString());
                 }
 
                 lastPush = payload;
             }
         } catch (Exception e) {
-            Log.d(TAG, "\tERROR sendPushToView. SAVED NOTIFICATION: " + e.getMessage());
             lastPush = payload;
         }
     }
 
     public static void sendTokenRefresh(String token) {
-        Log.d(TAG, "==> FCMPlugin sendRefreshToken");
         try {
             String callBack = "javascript:" + tokenRefreshCallBack + "('" + token + "')";
             gWebView.sendJavascript(callBack);
-        } catch (Exception e) {
-            Log.d(TAG, "\tERROR sendRefreshToken: " + e.getMessage());
-        }
+        } catch (Exception e) { }
     }
 
     @Override

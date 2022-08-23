@@ -3,7 +3,6 @@ package com.gae.scaffolder.plugin;
 import android.arch.lifecycle.MutableLiveData;
 import android.arch.lifecycle.ViewModel;
 import android.support.transition.Visibility;
-import android.util.Log;
 import android.view.View;
 
 import org.json.JSONException;
@@ -17,9 +16,7 @@ public class NotificationModel extends ViewModel {
         try {
 
             this.messageData.setValue(new JSONObject(data));
-        } catch (JSONException jsonErr) {
-            Log.e(getClass().getName(), jsonErr.getMessage(), jsonErr);
-        }
+        } catch (JSONException jsonErr) {   }
     }
 
     public String getData() {
